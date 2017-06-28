@@ -10,7 +10,9 @@ var locations = [
 ];
 
 // TODO: Complete the following function to initialize the map
-
+var input;
+var filterContent;
+var htmlContent;
 
 function initMap() {
   var self = this;
@@ -43,6 +45,11 @@ function initMap() {
     // Push the marker to our array of markers.
     markers.push(marker);
     // Create an onclick event to open an infowindow at each marker.
+
+    bounds.extend(markers[i].position);
+  }
+  for (var i = 0; i < markers.length; i++) {
+    marker = markers[i];
     marker.addListener('click', function() {
       populateInfoWindow(this, largeInfowindow);
     });
@@ -52,7 +59,6 @@ function initMap() {
     marker.addListener('mouseout', function() {
       this.setIcon(defaultIcon);
     });
-    bounds.extend(markers[i].position);
   }
   // Extend the boundaries of the map for each marker
   map.fitBounds(bounds);
@@ -70,11 +76,14 @@ function populateInfoWindow(marker, infowindow) {
     });
   }
 }
-
-function showInfo (place) {
+function hideMarkers(markers) {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(null);
   }
+}
+
+function showInfo (place) {
+  hideMarkers(markers);
   var marker = new google.maps.Marker({
     map: map,
     position: place.location,
@@ -96,6 +105,32 @@ function makeMarkerIcon(markerColor) {
     new google.maps.Point(10, 34),
     new google.maps.Size(21,34));
   return markerImage;
+}
+
+function showFilter() {
+  input = filterContent.toLowerCase();
+  if (!input) {
+    hideMarkers(markers);
+    htmlContent = "";
+  } else {
+    hideMarkers(markers);
+    for (var i = 0; i < locations.length; i++) {
+      if (locations[i].title.toLowerCase().indexOf(input) != -1) {
+        var marker = new google.maps.Marker({
+          map: map,
+          position: locations[i].location,
+          title: locations[i].title,
+          animation: google.maps.Animation.DROP,
+        });
+        var largeInfowindow = new google.maps.InfoWindow();
+        var highlightedIcon = makeMarkerIcon('FFFF24');
+        marker.setIcon(highlightedIcon);
+        populateInfoWindow(marker, largeInfowindow);
+      }
+    }
+  }
+
+
 }
 
 var ViewModel = function() {
