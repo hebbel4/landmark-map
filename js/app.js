@@ -151,7 +151,7 @@ function showFilter() {
     for (var j = 0; j < locationsV.length; j++) {
       var loc = locationsV[j];
       htmlContent += '<button class="places" value="' + loc.title +
-       '" data-bind="click: showInfo"></button><br>'
+       '" data-bind="click: showInfo"></button><br>';
     }
     document.getElementById("filter-lst").innerHTML = htmlContent;
   }
