@@ -9,10 +9,14 @@ var locations = [
   {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
 ];
 
+var locationsV = [];
+
 // TODO: Complete the following function to initialize the map
 var input;
 var filterContent;
-var htmlContent;
+var largeInfowindow;
+var highlightedIcon;
+var defaultIcon;
 
 function initMap() {
   var self = this;
@@ -24,9 +28,9 @@ function initMap() {
   // we used, 40.7413549, -73.99802439999996 or your own!
 
 
-  var largeInfowindow = new google.maps.InfoWindow();
-  var highlightedIcon = makeMarkerIcon('FFFF24');
-  var defaultIcon = makeMarkerIcon('0091ff');
+  largeInfowindow = new google.maps.InfoWindow();
+  highlightedIcon = makeMarkerIcon('FFFF24');
+  defaultIcon = makeMarkerIcon('0091ff');
   var bounds = new google.maps.LatLngBounds();
 
   for (var i = 0; i < locations.length; i++) {
@@ -45,25 +49,29 @@ function initMap() {
     // Push the marker to our array of markers.
     markers.push(marker);
     // Create an onclick event to open an infowindow at each marker.
-
+    marker.addListener('click', markerClickListener);
+    marker.addListener('mouseover', mouseOver);
+    marker.addListener('mouseout', mouseOut);
     bounds.extend(markers[i].position);
-  }
-  for (var i = 0; i < markers.length; i++) {
-    marker = markers[i];
-    marker.addListener('click', function() {
-      populateInfoWindow(this, largeInfowindow);
-    });
-    marker.addListener('mouseover', function() {
-      this.setIcon(highlightedIcon);
-    });
-    marker.addListener('mouseout', function() {
-      this.setIcon(defaultIcon);
-    });
   }
   // Extend the boundaries of the map for each marker
   map.fitBounds(bounds);
 }
 
+function markerClickListener () {
+  var marker = this;
+  populateInfoWindow(marker, largeInfowindow);
+}
+
+function mouseOver () {
+  var marker = this;
+  marker.setIcon(highlightedIcon);
+}
+
+function mouseOut () {
+  var marker = this;
+  marker.setIcon(defaultIcon);
+}
 function populateInfoWindow(marker, infowindow) {
   // Check to make sure the infowindow is not already opened on this marker.
   if (infowindow.marker != marker) {
@@ -111,9 +119,12 @@ function showFilter() {
   input = filterContent.toLowerCase();
   if (!input) {
     hideMarkers(markers);
-    htmlContent = "";
+    document.getElementById("lst").innerHTML = "<p>no results found</p>";
   } else {
+    document.getElementById("lst").innerHTML = "<p></p>";
     hideMarkers(markers);
+    var num = 0;
+    var ind = 0;
     for (var i = 0; i < locations.length; i++) {
       if (locations[i].title.toLowerCase().indexOf(input) != -1) {
         var marker = new google.maps.Marker({
@@ -126,8 +137,23 @@ function showFilter() {
         var highlightedIcon = makeMarkerIcon('FFFF24');
         marker.setIcon(highlightedIcon);
         populateInfoWindow(marker, largeInfowindow);
+        locationsV[ind] = locations[i];
+        ind++;
+      } else {
+        num++;
       }
     }
+    if (num == locations.length) {
+      document.getElementById("filter-lst").innerHTML = "<p>no results found</p>";
+      return;
+    }
+    var htmlContent = "";
+    for (var j = 0; j < locationsV.length; j++) {
+      var loc = locationsV[j];
+      htmlContent += '<button class="places" value="' + loc.title +
+       '" data-bind="click: showInfo"></button><br>'
+    }
+    document.getElementById("filter-lst").innerHTML = htmlContent;
   }
 
 

@@ -9,9 +9,17 @@
     <div class="container">
       <div class="options-box">
         <h1>Find Your New NYC Home</h1>
-        <div data-bind="foreach: locations">
+        <div id="filter-lst" data-bind="foreach: locationsV">
+          <button class="placesV" data-bind="text: title, click: showInfo"></button>
+          <br>
+        </div>
+        <div id="lst" data-bind="foreach: locations">
           <button class="places" data-bind="text: title, click: showInfo"></button>
           <br>
+        </div>
+        <div>
+          <input id="places-search" type="text" data-bind="value: filterContent" placeholder="Ex: Park">
+          <input id="go-places" type="button" data-bind="click: showFilter" value="Filter">
         </div>
       </div>
     <!-- TODO 1: Create a place to put the map in the HTML-->
@@ -19,7 +27,7 @@
     </div>
    <!--TODO: Load the JS API ASYNCHRONOUSLY below.-->
 
-  <script async defer src="http://maps.googleapis.com/maps/api/js?&key=AIzaSyADCU3EpyN2FVPW8hlm4671WGZoNab2wjw&v=3&callback=initMap">
+  <script async defer src="http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyADCU3EpyN2FVPW8hlm4671WGZoNab2wjw&v=3&callback=initMap">
   </script>
   <script src="js/lib/knockout-3.4.2.js"></script>
   <script src="js/app.js"></script>
