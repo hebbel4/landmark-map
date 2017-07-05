@@ -109,6 +109,7 @@ var Loc = function(data, id){
 var ViewModel = function() {
     var self = this;
     this.locList = ko.observableArray([]);
+    this.filterKeyword = ko.observable('');
     this.showInfo = function(id){
         for (var i = 0; i < markers.length; i++) {
             if (markers[i].id === id) {
@@ -135,12 +136,21 @@ var ViewModel = function() {
         self.showInfo(self.currentLoc().id());
     };
 
-    this.rmv = function (){
-        var r = $('#filter_input').val();
-        $('li:contains('+r+')').remove();
+    this.filterList = ko.computed(function() {
+        if (!self.filterKeyword()) {
+            return self.locList();
+        } else {
+            return ko.utils.arrayFilter(self.locList(), function(lst) {
+                return lst.title().toLowerCase().indexOf(self.filterKeyword().toLowerCase()) !== -1;
+          });
+        }
 
+    });
+
+    this.rmv = function (){
+        var r = self.filterKeyword();
         for (var i = 0; i < locations.length; i++) {
-            if (locations[i].title.indexOf(r) != -1) {
+            if (locations[i].title.toLowerCase().indexOf(r) === -1) {
                 markers[i].setVisible(false);
             }
         }

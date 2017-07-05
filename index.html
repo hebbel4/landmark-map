@@ -10,10 +10,10 @@
     <!-- <div class="container"> -->
 
     <div id="left">
-      <input type="text" id="filter_input">
-      <input type="button" value="Filter" id="filter_btn" data-bind="click: rmv">
-      <ul data-bind="foreach: locList">
-        <li id="" data-bind="text: title, click: $parent.setCurrent"></li>
+      <input type="text" id="filter_input" data-bind="textInput: filterKeyword">
+      <input type="button" value="Update Markers" id="filter_btn" data-bind="click: rmv">
+      <ul data-bind="foreach: filterList">
+        <li id="" data-bind="text: $data.title, click: $parent.setCurrent"></li>
       </ul>
     </div>
 
