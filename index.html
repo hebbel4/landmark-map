@@ -1,35 +1,38 @@
+<!DOCTYPE html>
 <html>
   <head>
    <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel=stylesheet type=text/css href="css/style.css">
+   <link rel="stylesheet" type="text/css" href="css/style.css">
    <meta charset="utf-8">
    <title>Neighbourhood Map</title>
   </head>
   <body>
-    <div class="container">
-      <div class="options-box">
-        <h1>Find Your New NYC Home</h1>
-        <div id="filter-lst" data-bind="foreach: locationsV">
-          <button class="placesV" data-bind="text: title, click: showInfo"></button>
-          <br>
-        </div>
-        <div id="lst" data-bind="foreach: locations">
-          <button class="places" data-bind="text: title, click: showInfo"></button>
-          <br>
-        </div>
-        <div>
-          <input id="places-search" type="text" data-bind="value: filterContent" placeholder="Ex: Park">
-          <input id="go-places" type="button" data-bind="click: showFilter" value="Filter">
-        </div>
-      </div>
-    <!-- TODO 1: Create a place to put the map in the HTML-->
-    <div id="map"></div>
+    <!-- <div class="container"> -->
+
+    <div id="left">
+      <input type="text" id="filter_input">
+      <input type="button" value="Filter" id="filter_btn" data-bind="click: rmv">
+      <ul data-bind="foreach: locList">
+        <li id="" data-bind="text: title, click: $parent.setCurrent"></li>
+      </ul>
     </div>
+
+    <div id="middle">
+    <input type="button" value="Toggle" data-bind="click: toggle">
+    </div>
+
+    <div class="main">
+      <div id="map"></div>
+    </div>
+
+    <!-- </div> -->
    <!--TODO: Load the JS API ASYNCHRONOUSLY below.-->
 
-  <script async defer src="http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyADCU3EpyN2FVPW8hlm4671WGZoNab2wjw&v=3&callback=initMap">
-  </script>
+
   <script src="js/lib/knockout-3.4.2.js"></script>
+  <script src="js/lib/jquery.min.js"></script>
   <script src="js/app.js"></script>
+  <script async defer onerror="mapError()" src="http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyADCU3EpyN2FVPW8hlm4671WGZoNab2wjw&v=3&callback=initMap">
+  </script>
   </body>
 </html>

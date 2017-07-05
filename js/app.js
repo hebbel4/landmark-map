@@ -1,166 +1,169 @@
-var map;
-var markers = [];
 var locations = [
-  {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-  {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-  {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-  {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-  {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-  {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
+  {title: 'Empire State Building', location: {lat: 40.748541, lng: -73.985758}},
+  {title: 'Time Square', location: {lat: 40.758895, lng: -73.985131}},
+  {title: 'Central Park', location: {lat: 40.782865, lng: -73.965355}},
+  {title: 'United Nations', location: {lat: 40.749548, lng: -73.969259}},
+  {title: 'Metropolitan Museum of Arts', location: {lat: 40.779437, lng: -73.963244}},
+  {title: 'Columbia University', location: {lat: 40.807536, lng: -73.962573}}
 ];
-
-var locationsV = [];
-
-// TODO: Complete the following function to initialize the map
-var input;
-var filterContent;
+var markers = [];
+var map;
 var largeInfowindow;
-var highlightedIcon;
-var defaultIcon;
+
+function mapError() {
+    $('#map').text("map error");
+}
 
 function initMap() {
-  var self = this;
-  // TODO: use a constructor to create a new map JS object. You can use the coordinates
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 40.7413549, lng: -73.99802439999996},
-    zoom: 13
-  });
-  // we used, 40.7413549, -73.99802439999996 or your own!
-
-
-  largeInfowindow = new google.maps.InfoWindow();
-  highlightedIcon = makeMarkerIcon('FFFF24');
-  defaultIcon = makeMarkerIcon('0091ff');
-  var bounds = new google.maps.LatLngBounds();
-
-  for (var i = 0; i < locations.length; i++) {
-    // Get the position from the location array.
-    var position = locations[i].location;
-    var title = locations[i].title;
-    // Create a marker per location, and put into markers array.
-    var marker = new google.maps.Marker({
-      map: map,
-      position: position,
-      title: title,
-      animation: google.maps.Animation.DROP,
-      icon: defaultIcon,
-      id: i
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 40.7413549, lng: -73.99802439999996},
+        zoom: 13
     });
-    // Push the marker to our array of markers.
-    markers.push(marker);
-    // Create an onclick event to open an infowindow at each marker.
-    marker.addListener('click', markerClickListener);
-    marker.addListener('mouseover', mouseOver);
-    marker.addListener('mouseout', mouseOut);
-    bounds.extend(markers[i].position);
-  }
-  // Extend the boundaries of the map for each marker
-  map.fitBounds(bounds);
+
+    largeInfowindow = new google.maps.InfoWindow();
+
+    var bounds = new google.maps.LatLngBounds();
+
+    for (var i = 0; i < locations.length; i++) {
+        // Get the position from the location array.
+        var position = locations[i].location;
+        var title = locations[i].title;
+        // Create a marker per location, and put into markers array.
+        var marker = new google.maps.Marker({
+            map: map,
+            position: position,
+            title: title,
+            animation: google.maps.Animation.DROP,
+            id: i
+        });
+        // Push the marker to our array of markers.
+        markers.push(marker);
+        // Create an onclick event to open an infowindow at each marker.
+        marker.addListener('click', markerClickListener);
+        bounds.extend(markers[i].position);
+    }
+    // Extend the boundaries of the map for each marker
+    map.fitBounds(bounds);
+
 }
 
 function markerClickListener () {
-  var marker = this;
-  populateInfoWindow(marker, largeInfowindow);
+    var marker = this;
+    if (marker.getAnimation() !== null) {
+        marker.setAnimation(null);
+    } else {
+        marker.setAnimation(google.maps.Animation.DROP);
+    }
+    populateInfoWindow(marker, largeInfowindow);
 }
 
-function mouseOver () {
-  var marker = this;
-  marker.setIcon(highlightedIcon);
-}
-
-function mouseOut () {
-  var marker = this;
-  marker.setIcon(defaultIcon);
-}
 function populateInfoWindow(marker, infowindow) {
-  // Check to make sure the infowindow is not already opened on this marker.
-  if (infowindow.marker != marker) {
-    infowindow.marker = marker;
-    infowindow.setContent('<div>' + marker.title + '</div>');
-    infowindow.open(map, marker);
-    // Make sure the marker property is cleared if the infowindow is closed.
-    infowindow.addListener('closeclick',function(){
-      infowindow.setMarker = null;
-    });
-  }
-}
-function hideMarkers(markers) {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);
-  }
-}
+    // Check to make sure the infowindow is not already opened on this marker.
+    if (infowindow.marker != marker) {
+        infowindow.marker = marker;
+        var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title +
+                    '&format=json&callback=wikiCallback';
 
-function showInfo (place) {
-  hideMarkers(markers);
-  var marker = new google.maps.Marker({
-    map: map,
-    position: place.location,
-    title: place.title,
-    animation: google.maps.Animation.DROP,
-  });
-  var largeInfowindow = new google.maps.InfoWindow();
-  var highlightedIcon = makeMarkerIcon('FFFF24');
-  marker.setIcon(highlightedIcon);
-  populateInfoWindow(marker, largeInfowindow);
-}
+        var invalid = true;
 
-function makeMarkerIcon(markerColor) {
-  var markerImage = new google.maps.MarkerImage(
-    'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
-    '|40|_|%E2%80%A2',
-    new google.maps.Size(21, 34),
-    new google.maps.Point(0, 0),
-    new google.maps.Point(10, 34),
-    new google.maps.Size(21,34));
-  return markerImage;
-}
+        var wikiStr = '<ul id="wikipedia-links">Relevant Wikipedia articles';
+        $.ajax({
+            url: wikiUrl,
+            dataType: "jsonp",
+            success: function( response ) {
+              var articleList = response[1];
+              for (var i = 0; i < articleList.length; i++) {
+                  articleStr = articleList[i];
+                  wikiStr = wikiStr + '<li><a href="http://en.wikipedia.org/wiki/' + articleStr + '">' +
+                  articleStr + '</a></li>';
+              }
 
-function showFilter() {
-  input = filterContent.toLowerCase();
-  if (!input) {
-    hideMarkers(markers);
-    document.getElementById("lst").innerHTML = "<p>no results found</p>";
-  } else {
-    document.getElementById("lst").innerHTML = "<p></p>";
-    hideMarkers(markers);
-    var num = 0;
-    var ind = 0;
-    for (var i = 0; i < locations.length; i++) {
-      if (locations[i].title.toLowerCase().indexOf(input) != -1) {
-        var marker = new google.maps.Marker({
-          map: map,
-          position: locations[i].location,
-          title: locations[i].title,
-          animation: google.maps.Animation.DROP,
+              wikiStr = wikiStr + '</ul>';
+              infowindow.setContent('<div>' + marker.title  + wikiStr + '</div>');
+              invalid = false;
+            }
         });
-        var largeInfowindow = new google.maps.InfoWindow();
-        var highlightedIcon = makeMarkerIcon('FFFF24');
-        marker.setIcon(highlightedIcon);
-        populateInfoWindow(marker, largeInfowindow);
-        locationsV[ind] = locations[i];
-        ind++;
-      } else {
-        num++;
-      }
-    }
-    if (num == locations.length) {
-      document.getElementById("filter-lst").innerHTML = "<p>no results found</p>";
-      return;
-    }
-    var htmlContent = "";
-    for (var j = 0; j < locationsV.length; j++) {
-      var loc = locationsV[j];
-      htmlContent += '<button class="places" value="' + loc.title +
-       '" data-bind="click: showInfo"></button><br>';
-    }
-    document.getElementById("filter-lst").innerHTML = htmlContent;
-  }
 
+        if(invalid){
+            infowindow.setContent('<div>' + marker.title +
+              '<p>fail to get wikipedia resources</p>' + '</div>');
+        }
+        infowindow.open(map, marker);
 
+        // Make sure the marker property is cleared if the infowindow is closed.
+        infowindow.addListener('closeclick',function(){
+            infowindow.close();
+
+        });
+    }
 }
+
+var Loc = function(data, id){
+    this.title = ko.observable(data.title);
+    this.lat = ko.observable(data.location.lat);
+    this.lng = ko.observable(data.location.lng);
+    this.location = ko.observable(data.location);
+    this.id = ko.observable(id);
+};
 
 var ViewModel = function() {
+    var self = this;
+    this.locList = ko.observableArray([]);
+    this.showInfo = function(id){
+        for (var i = 0; i < markers.length; i++) {
+            if (markers[i].id === id) {
+                if (markers[i].getAnimation() !== null) {
+                    markers[i].setAnimation(null);
+                } else {
+                    markers[i].setAnimation(google.maps.Animation.DROP);
+                }
+                populateInfoWindow(markers[i], largeInfowindow);
+            }
+        }
+    };
+    var i = 0;
+    locations.forEach(function(loc, i) {
+        self.locList.push(new Loc(loc, i));
+        i++;
+    });
+
+
+    this.currentLoc = ko.observable(this.locList()[0]);
+
+    this.setCurrent = function(loc){
+        self.currentLoc(loc);
+        self.showInfo(self.currentLoc().id());
+    };
+
+    this.rmv = function (){
+        var r = $('#filter_input').val();
+        $('li:contains('+r+')').remove();
+
+        for (var i = 0; i < locations.length; i++) {
+            if (locations[i].title.indexOf(r) != -1) {
+                markers[i].setVisible(false);
+            }
+        }
+    };
+    var clicked = false;
+    this.toggle = function() {
+        $('#left').toggle();
+        if (!clicked) {
+            $('#map').css("left", "50px");
+            clicked = true;
+        } else {
+            $('#map').css("left", "320px");
+            clicked = false;
+        }
+    };
+
 
 };
 
+
+
+
+
+
 ko.applyBindings(new ViewModel());
+
