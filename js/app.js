@@ -22,6 +22,11 @@ function initMap() {
 
     largeInfowindow = new google.maps.InfoWindow();
 
+    largeInfowindow.addListener('closeclick',function(){
+        largeInfowindow.close();
+
+    });
+
     var bounds = new google.maps.LatLngBounds();
 
     for (var i = 0; i < locations.length; i++) {
@@ -64,8 +69,7 @@ function populateInfoWindow(marker, infowindow) {
         var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title +
                     '&format=json&callback=wikiCallback';
 
-        var invalid = true;
-
+        infowindow.setContent('');
         var wikiStr = '<ul id="wikipedia-links">Relevant Wikipedia articles';
         $.ajax({
             url: wikiUrl,
@@ -80,21 +84,33 @@ function populateInfoWindow(marker, infowindow) {
 
               wikiStr = wikiStr + '</ul>';
               infowindow.setContent('<div>' + marker.title  + wikiStr + '</div>');
-              invalid = false;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (textStatus === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (textStatus === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (textStatus === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }
+                infowindow.setContent('<div>' + marker.title +
+                        '<p>' + msg + '</p></div>');
             }
         });
 
-        if(invalid){
-            infowindow.setContent('<div>' + marker.title +
-              '<p>fail to get wikipedia resources</p>' + '</div>');
-        }
         infowindow.open(map, marker);
+        infowindow.marker = null;
 
-        // Make sure the marker property is cleared if the infowindow is closed.
-        infowindow.addListener('closeclick',function(){
-            infowindow.close();
 
-        });
     }
 }
 
@@ -138,8 +154,19 @@ var ViewModel = function() {
 
     this.filterList = ko.computed(function() {
         if (!self.filterKeyword()) {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setVisible(true);
+            }
             return self.locList();
         } else {
+            var r = self.filterKeyword();
+            for (var j = 0; j < locations.length; j++) {
+                if (locations[j].title.toLowerCase().indexOf(r) === -1) {
+                    markers[j].setVisible(false);
+                } else {
+                    markers[j].setVisible(true);
+                }
+            }
             return ko.utils.arrayFilter(self.locList(), function(lst) {
                 return lst.title().toLowerCase().indexOf(self.filterKeyword().toLowerCase()) !== -1;
           });
@@ -147,14 +174,6 @@ var ViewModel = function() {
 
     });
 
-    this.rmv = function (){
-        var r = self.filterKeyword();
-        for (var i = 0; i < locations.length; i++) {
-            if (locations[i].title.toLowerCase().indexOf(r) === -1) {
-                markers[i].setVisible(false);
-            }
-        }
-    };
     var clicked = false;
     this.toggle = function() {
         $('#left').toggle();
