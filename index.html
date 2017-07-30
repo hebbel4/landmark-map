@@ -2,33 +2,22 @@
 <html>
   <head>
    <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="css/style.css">
+   <link rel="stylesheet" type="text/css" href="css/style.css">
    <meta charset="utf-8">
    <title>Neighbourhood Map</title>
   </head>
   <body>
-    <!-- <div class="container"> -->
-
-    <div id="left">
-      <input type="text" id="filter_input" data-bind="textInput: filterKeyword">
-
-      <ul data-bind="foreach: filterList">
-        <li id="" data-bind="text: $data.title, click: $parent.setCurrent"></li>
-      </ul>
+    <div class="container">
+      <div id="left">
+        <input type="text" id="filter_input" data-bind="textInput: filterKeyword">
+        <ul data-bind="foreach: filterList">
+          <li id="" data-bind="text: $data.title, click: $parent.setCurrent"></li>
+        </ul>
+      </div>
     </div>
 
-    <div id="middle">
-    <input type="button" value="Toggle" data-bind="click: toggle">
-    </div>
-
-    <div class="main">
-      <div id="map"></div>
-    </div>
-
-    <!-- </div> -->
+    <div id="map"></div>
    <!--TODO: Load the JS API ASYNCHRONOUSLY below.-->
-
-
   <script src="js/lib/knockout-3.4.2.js"></script>
   <script src="js/lib/jquery-3.2.1.js"></script>
   <script src="js/app.js"></script>

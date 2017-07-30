@@ -22,11 +22,6 @@ function initMap() {
 
     largeInfowindow = new google.maps.InfoWindow();
 
-    largeInfowindow.addListener('closeclick',function(){
-        largeInfowindow.close();
-
-    });
-
     var bounds = new google.maps.LatLngBounds();
 
     for (var i = 0; i < locations.length; i++) {
@@ -69,7 +64,7 @@ function populateInfoWindow(marker, infowindow) {
         var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title +
                     '&format=json&callback=wikiCallback';
 
-        infowindow.setContent('');
+
         var wikiStr = '<ul id="wikipedia-links">Relevant Wikipedia articles';
         $.ajax({
             url: wikiUrl,
@@ -108,9 +103,12 @@ function populateInfoWindow(marker, infowindow) {
         });
 
         infowindow.open(map, marker);
-        infowindow.marker = null;
 
+        // Make sure the marker property is cleared if the infowindow is closed.
+        infowindow.addListener('closeclick',function(){
+            infowindow.close();
 
+        });
     }
 }
 
@@ -160,11 +158,9 @@ var ViewModel = function() {
             return self.locList();
         } else {
             var r = self.filterKeyword();
-            for (var j = 0; j < locations.length; j++) {
-                if (locations[j].title.toLowerCase().indexOf(r) === -1) {
-                    markers[j].setVisible(false);
-                } else {
-                    markers[j].setVisible(true);
+            for (var i = 0; i < locations.length; i++) {
+                if (locations[i].title.toLowerCase().indexOf(r) === -1) {
+                    markers[i].setVisible(false);
                 }
             }
             return ko.utils.arrayFilter(self.locList(), function(lst) {
@@ -188,10 +184,6 @@ var ViewModel = function() {
 
 
 };
-
-
-
-
 
 
 ko.applyBindings(new ViewModel());

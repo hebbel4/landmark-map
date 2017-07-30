@@ -1,8 +1,8 @@
+
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    display: flex;
 }
 
 .container {
@@ -10,22 +10,12 @@ html, body {
     position: relative;
 }
 
-#middle {
-    width: 10%;
-}
-
-.main {
-    height: 100%;
-}
-
 #map {
     bottom:0px;
     height: 100%;
-    left: 320px;
+    left: 362px;
     position: absolute;
     right: 0px;
-    width: 100%;
-    max-width: 100%;
 }
 
 #left{
@@ -36,6 +26,7 @@ html, body {
     line-height: 35px;
     padding: 10px 10px 30px 10px;
     text-align: left;
-    width: 250px;
+    width: 340px;
+
 }
 
