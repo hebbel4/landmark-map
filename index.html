@@ -10,8 +10,9 @@
     <div class="container">
       <div id="left">
         <input type="text" id="filter_input" data-bind="textInput: filterKeyword">
-        <ul data-bind="foreach: filterList">
-          <li id="" data-bind="text: $data.title, click: $parent.setCurrent"></li>
+        <span id="filter_text">Filter</span>
+        <ul class="results" data-bind="foreach: filterList">
+          <li class="items" data-bind="text: $data.title, click: $parent.setCurrent"></li>
         </ul>
       </div>
     </div>
