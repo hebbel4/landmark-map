@@ -61,7 +61,7 @@ function populateInfoWindow(marker, infowindow) {
     // Check to make sure the infowindow is not already opened on this marker.
     if (infowindow.marker != marker) {
         infowindow.marker = marker;
-        var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title +
+        var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title +
                     '&format=json&callback=wikiCallback';
 
 
@@ -73,7 +73,7 @@ function populateInfoWindow(marker, infowindow) {
               var articleList = response[1];
               for (var i = 0; i < articleList.length; i++) {
                   articleStr = articleList[i];
-                  wikiStr = wikiStr + '<li><a href="http://en.wikipedia.org/wiki/' + articleStr + '">' +
+                  wikiStr = wikiStr + '<li><a href="https://en.wikipedia.org/wiki/' + articleStr + '">' +
                   articleStr + '</a></li>';
               }
 
