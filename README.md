@@ -3,7 +3,7 @@
 This landmark map project displays the Google Map of New York City and the landmarks in this area. Users can search all included markers and click to see additional information (relevant Wikipedia articles) about the location.
 
 ## How to Use 
-* Click here to try it out: [https://hebbel4.github.io/landmark-map/]https://hebbel4.github.io/landmark-map/
+* Click here to try it out: https://hebbel4.github.io/landmark-map/
 * Click on any of the markers on the map / sidebar for more information
 * Type in the search bar to filter markers and the location list in real-time
 
