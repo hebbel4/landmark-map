@@ -4,7 +4,11 @@ var locations = [
   {title: 'Central Park', location: {lat: 40.782865, lng: -73.965355}},
   {title: 'United Nations', location: {lat: 40.749548, lng: -73.969259}},
   {title: 'Metropolitan Museum of Arts', location: {lat: 40.779437, lng: -73.963244}},
-  {title: 'Columbia University', location: {lat: 40.807536, lng: -73.962573}}
+  {title: 'Columbia University', location: {lat: 40.807536, lng: -73.962573}},
+  {title: 'Rockefeller Center', location: {lat: 40.75874, lng: -73.978674}},
+  {title: 'Lincoln Center for the Performing Arts', location: {lat: 40.772464, lng: -73.983489}},
+  {title: 'New York University', location: {lat: 40.729513, lng: -73.996461}},
+  {title: 'Wall Street', location: {lat: 40.706193, lng: -74.00916}}
 ];
 var markers = [];
 var map;
