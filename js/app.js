@@ -26,6 +26,10 @@ function initMap() {
 
     largeInfowindow = new google.maps.InfoWindow();
 
+    largeInfowindow.addListener('closeclick',function(){
+        largeInfowindow.close();
+    });
+
     var bounds = new google.maps.LatLngBounds();
 
     for (var i = 0; i < locations.length; i++) {
@@ -68,7 +72,7 @@ function populateInfoWindow(marker, infowindow) {
         var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title +
                     '&format=json&callback=wikiCallback';
 
-
+        infowindow.setContent('');
         var wikiStr = '<ul id="wikipedia-links">Relevant Wikipedia articles';
         $.ajax({
             url: wikiUrl,
@@ -109,10 +113,8 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.open(map, marker);
 
         // Make sure the marker property is cleared if the infowindow is closed.
-        infowindow.addListener('closeclick',function(){
-            infowindow.close();
+        infowindow.marker = null;
 
-        });
     }
 }
 
@@ -162,16 +164,17 @@ var ViewModel = function() {
             return self.locList();
         } else {
             var r = self.filterKeyword();
-            for (var i = 0; i < locations.length; i++) {
-                if (locations[i].title.toLowerCase().indexOf(r) === -1) {
-                    markers[i].setVisible(false);
+            for (var j = 0; j < locations.length; j++) {
+                if (locations[j].title.toLowerCase().indexOf(r) === -1) {
+                    markers[j].setVisible(false);
+                } else {
+                    markers[j].setVisible(true);
                 }
             }
             return ko.utils.arrayFilter(self.locList(), function(lst) {
                 return lst.title().toLowerCase().indexOf(self.filterKeyword().toLowerCase()) !== -1;
           });
         }
-
     });
 
     var clicked = false;
@@ -185,8 +188,6 @@ var ViewModel = function() {
             clicked = false;
         }
     };
-
-
 };
 
 
